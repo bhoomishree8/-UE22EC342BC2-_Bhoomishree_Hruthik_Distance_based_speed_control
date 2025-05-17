@@ -1,0 +1,37 @@
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2); // Adjust if different
+
+String inputString = ""; // To hold incoming distance
+boolean newData = false;
+
+void setup() {
+  lcd.begin(16, 2);
+  Serial.begin(9600); // Receiving from Sensor Arduino
+  lcd.print("Waiting...");
+}
+
+void loop() {
+  while (Serial.available()) {
+    char inChar = (char)Serial.read();
+    if (inChar == '\n') {
+      newData = true;
+      break;
+    } else {
+      inputString += inChar;
+    }
+  }
+
+  if (newData) {
+    int distance = inputString.toInt();
+    lcd.clear();
+    if (distance < 10) {
+      lcd.print("Too close!");
+    } else {
+      lcd.print("Distance fine");
+    }
+
+    inputString = "";
+    newData = false;
+  }
+}
